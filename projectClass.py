@@ -1,6 +1,6 @@
 from rply import LexerGenerator
 
-class Lexer:
+class ProjectLexer:
     def __init__(self):
         self.lexer = LexerGenerator()
     def add_tokens(self):
@@ -10,7 +10,7 @@ class Lexer:
         # if
         self.lexer.add('IF',r'if')
         # int
-        self.lexer.add('ADD',r'int')
+        self.lexer.add('INT',r'int')
         # float
         self.lexer.add('FLOAT',r'float')
         # string
@@ -22,11 +22,11 @@ class Lexer:
         # Add
         self.lexer.add('ADD',r'\+')
         # Subtract
-        self.lexer.add('ADD',r'-')
+        self.lexer.add('SUBTRACTION',r'-')
         # Multiply
-        self.lexer.add('MULTIPLY',r'*')
+        #self.lexer.add('MULTIPLY',r'\*')
         # Divide
-        self.lexer.add('DIVIDE',r'\/')
+        #self.lexer.add('DIVIDE',r'\/')
 
         # 3) Conditional Operations
         # Greater Than (>)
@@ -48,12 +48,14 @@ class Lexer:
         # Closing parentheses
         self.lexer.add('CLOSINGPAREN',r'\)')
         # Semicolon
-        self.lexer.add("ADD",r';')
+        self.lexer.add("SEMICOLON",r';')
+        # Colon
+        self.lexer.add("COLON",r':')
 
         # Identifiers
         self.lexer.add('IDENTIFIERS',r'[a-zA-Z_][a-zA-Z0-9_]*') # Identifiers should start with a letter or underscore and can have numbers, letters, and underscores after
         # Numbers
-        self.lexer.add('NUMBERS',r'\d+(\.\d+)') # Matches any number including float, does not match if no number present before decimal point (eg, .5)
+        self.lexer.add('NUMBER',r'\d+(\.\d+)?') # Matches any number including float, does not match if no number present before decimal point (eg, .5)
 
         # Ignore Whitespaces
         self.lexer.ignore(r'\s+')
