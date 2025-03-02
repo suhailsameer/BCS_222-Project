@@ -24,9 +24,9 @@ class ProjectLexer:
         # Subtract
         self.lexer.add('SUBTRACTION',r'-')
         # Multiply
-        #self.lexer.add('MULTIPLY',r'\*')
+        self.lexer.add('MULTIPLY',r'\*')
         # Divide
-        #self.lexer.add('DIVIDE',r'\/')
+        self.lexer.add('DIVIDE',r'\/')
 
         # 3) Conditional Operations
         # Greater Than (>)
