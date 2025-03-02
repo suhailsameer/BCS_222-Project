@@ -58,3 +58,7 @@ class Lexer:
         # Ignore Whitespaces
         self.lexer.ignore(r'\s+')
 
+    def get_lexer(self):
+        self.add_tokens()
+        return self.lexer.build()
+
