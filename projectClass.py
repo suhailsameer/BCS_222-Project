@@ -56,6 +56,8 @@ class ProjectLexer:
         self.lexer.add('IDENTIFIERS',r'[a-zA-Z_][a-zA-Z0-9_]*') # Identifiers should start with a letter or underscore and can have numbers, letters, and underscores after
         # Numbers
         self.lexer.add('NUMBER',r'\d+(\.\d+)?') # Matches any number including float, does not match if no number present before decimal point (eg, .5)
+        # String
+        self.lexer.add('STRING',r'"[^"]*"')
 
         # Ignore Whitespaces
         self.lexer.ignore(r'\s+')
