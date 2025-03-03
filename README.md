@@ -1,10 +1,17 @@
 # BNF Structure
 ```
 <program>::=<statement>|<statement><program>
-<statement>::=<declaration>|<assignment>|<IF>|<PRINT>
+<statement>::=<declaration>|
+              <assignment>|
+              <IF>|
+              <PRINT>
 <declaration>::=<type><identfier>;
 <assignment>::=<identifier>=<expression>;
-<expression>::=<term>|<expression>+<term>|<expression>-<term>|<expression>*<term>|<expression>/<term>
+<expression>::=<term>|
+               <expression>+<term>|
+               <expression>-<term>|
+               <expression>*<term>|
+               <expression>/<term>
 <IF>::="if" (<condition>) {<program>}
 <PRINT>::="print"(expression);
 <term>::=<number>|<identifier>|<string>
