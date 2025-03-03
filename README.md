@@ -9,12 +9,13 @@
 <assignment>::=<identifier>=<expression>;
 <expression>::=<term>|
                <expression>+<term>|
-               <expression>-<term>|
-               <expression>*<term>|
-               <expression>/<term>
+               <expression>-<term>
+<term>::=<factor>|
+         <factor>*<term>|
+         <factor>/<term>
 <IF>::="if" (<condition>) {<program>}
 <PRINT>::="print"(expression);
-<term>::=<number>|<identifier>|<string>
+<factor>::=<number>|<identifier>|<string>
 <condition>::=<expression><conditionalOperators><expression>
 <conditonalOperators>::= <|>|==|!=
 <type>::=int|float|string
