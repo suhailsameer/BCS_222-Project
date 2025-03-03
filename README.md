@@ -11,7 +11,7 @@
 <condition>::=<expression><conditionalOperators><expression>
 <conditonalOperators>::= <|>|==|!=
 <type>::=int|float|string
-<number>::=[0-9+['.'0-9+]*]
+<number>::=0-9+['.'0-9+]*
 <string>::=".*"
 <identifier>::=[a-zA-Z_][a-zA-Z0-9_]*
 ```
