@@ -1,4 +1,5 @@
 from rply import LexerGenerator
+from rply import ParserGenerator
 
 class ProjectLexer:
     def __init__(self):
@@ -22,7 +23,7 @@ class ProjectLexer:
         # Add
         self.lexer.add('ADD',r'\+')
         # Subtract
-        self.lexer.add('SUBTRACTION',r'-')
+        self.lexer.add('SUBTRACT',r'-')
         # Multiply
         self.lexer.add('MULTIPLY',r'\*')
         # Divide
@@ -61,6 +62,40 @@ class ProjectLexer:
 
         # Ignore Whitespaces
         self.lexer.ignore(r'\s+')
+
+    def parse_tokens(self):
+        pG=ParserGenerator(
+                        ['PRINT','IF','INT','FLOAT','STRING','ADD','SUBTRACT', # Token names
+                        'MULTIPLY','DIVIDE','GREATER','LESSER','EQUALTO','NOTEQUAL'
+                        'OPENBRACE','CLOSINGBRACE','OPENPAREN','CLOSEPAREN','SEMICOLON',
+                        'COLON','IDENTIFIERS','NUMBER','STRING'
+                        ],
+                        precedence=[
+                        ('left',['ADD','SUBTRACTION']),
+                        ('left',['MULTIPLY','DIVIDE']),
+                        ('left',['GREATER','LESSER','EQUALTO','NOTEQUAL'])
+                        ]
+                        )
+        @pG.production('expression: expression ADD factor')
+        @pG.production('expression: expression SUBTRACT factor')
+        def expression_binary_as(p):
+            left = p[0]
+            right = p[0]
+            if p[1].gettokentype()=='ADD':
+                return p[0] + p[2]
+            if p[1].gettokentype()=='SUBTRACT':
+                return p[0] - p[2]
+            
+        
+        @pG.production('expression: expression MULTIPLY term')
+        @pG.production('expression: expression DIVIDE term')
+        def expression_binary_md(p):
+            left = p[0]
+            right = p[0]
+            if p[1].gettokentype()=='MULTIPLY':
+                return p[0] * p[2]
+            if p[1].gettokentype()=='DIVIDE':
+                return p[0] / p[2]
 
     def get_lexer(self):
         self.add_tokens()
