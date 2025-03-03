@@ -6,7 +6,7 @@
 <assignment>::=<identifier>=<expression>;
 <expression>::=<term>|<expression>+<term>|<expression>-<term>|<expression>*<term>|<expression>/<term>
 <IF>::="if" (<condition>) {<program>}
-<PRINT>::="print(expression);
+<PRINT>::="print"(expression);
 <term>::=<number>|<identifier>|<string>
 <condition>::=<expression><conditionalOperators><expression>
 <conditonalOperators>::= <|>|==|!=
