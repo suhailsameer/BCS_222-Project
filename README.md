@@ -15,11 +15,10 @@
          <factor>/<term>
 <IF>::="if" (<condition>) {<program>}
 <PRINT>::="print"(expression);
-<factor>::=<number>|<identifier>|<string>
+<factor>::=<number>|<identifier>
 <condition>::=<expression><conditionalOperators><expression>
 <conditonalOperators>::= <|>|==|!=
-<type>::=int|float|string
+<type>::=int|float
 <number>::=0-9+['.'0-9+]*
-<string>::=".*"
 <identifier>::=[a-zA-Z_][a-zA-Z0-9_]*
 ```
