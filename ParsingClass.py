@@ -1,91 +1,91 @@
-from pyparsing import Word, alphas, nums, oneOf, Group, Forward, Suppress, ZeroOrMore, Literal, Optional, infixNotation, opAssoc, ParseException
+from pyparsing import *
+import re
 
-# Define basic elements
-identifier = Word(alphas, alphas + nums + "_").setName("identifier")
-integer = Word(nums).setName("integer")
-float_num = Word(nums) + '.' + Word(nums)
-number = float_num | integer
+# Define tokens
+integer = Keyword("int")
+floating = Keyword("float")
+print_keyword = Keyword("print")
+if_keyword = Keyword("if")
+identifier = Word(alphas, alphanums)
+number = Regex(r'\d+(\.\d*)?')
+plus = Literal("+")
+minus = Literal("-")
+equals = Literal("=")
+semicolon = Literal(";")
+open_paren = Literal("(")
+close_paren = Literal(")")
+open_brace = Literal("{")
+close_brace = Literal("}")
+greater_than = Literal(">")
+less_than = Literal("<")
+equals_equals = Literal("==")
+not_equals = Literal("!=")
 
-# Operators
-operator = oneOf("+ - * /")
-assignment = Suppress("=").setName("'='")
-semicolon = Literal(";").suppress().setName("';'")
-lbrace = Literal("{").suppress().setName("'{'")
-rbrace = Literal("}").suppress().setName("'}'")
-lparen = Literal("(").suppress().setName("'('")
-rparen = Literal(")").suppress().setName("')'")
+# Define grammar
+declaration = (integer("type") + identifier("variable_name") + semicolon("semicolon")).set_name("declaration")
+expression = Forward()
+term = identifier | number
+expression << term + ZeroOrMore((plus | minus) + term)
+assignment = (identifier("variable") + equals("equals") + expression("value") + semicolon("semicolon")).set_name("assignment")
+print_statement = (print_keyword("print_keyword") + open_paren("open_paren") + expression("expression") + close_paren("close_paren") + semicolon("semicolon")).set_name("print_statement")
+condition = (identifier("condition_variable") + (greater_than | less_than | equals_equals | not_equals)("condition_operator") + number("condition_value")).set_name("condition")
+statement_list = Forward()
+if_statement = (if_keyword("if_keyword") + open_paren("open_paren") + condition("condition") + close_paren("close_paren") + open_brace("open_brace") + statement_list("statement_list") + close_brace("close_brace")).set_name("if_statement")
+statement = declaration | assignment | print_statement | if_statement
+statement_list << ZeroOrMore(statement)
+program = OneOrMore(statement)
 
-# Variable declaration
-data_type = oneOf("int float").setName("data type")
-declaration = Group(data_type + identifier + semicolon)
-
-# Expressions
-operand = identifier | number
-expression = infixNotation(operand, [(operator, 2, opAssoc.LEFT)])
-
-# Assignment statement
-assignment_stmt = Group(identifier + assignment + expression + semicolon)
-
-# Print statement
-valid_functions = {"print"}
-print_stmt = Group(Literal("print") + lparen + identifier + rparen + semicolon)
-
-# If statement
-condition = Group(lparen + expression + rparen)
-if_block = Forward()
-if_stmt = Group(Literal("if") + condition + lbrace + if_block + rbrace)
-
-# Program structure
-statement = Forward()
-statement <<= declaration | assignment_stmt | print_stmt | if_stmt
-if_block <<= ZeroOrMore(statement)
-program = ZeroOrMore(statement)
-
+# Enhanced Error Handling
 def parse_code(code):
-    lines = code.strip().split("\n")
-    for i, line in enumerate(lines, start=1):
-        try:
-            parsed_result = program.parseString(line, parseAll=True)
-            # If parsing is successful, print the set of tokens
-            print(f"Tokens for line {i}: {set(parsed_result)}")
-        except ParseException as pe:
-            error_msg = f"Syntax Error at line {i}: "
-            if "data type" in str(pe.parserElement):
-                error_msg += f"Invalid data type in '{line.strip()}'. Check variable declaration syntax."
-            elif "';'" in str(pe.parserElement):
-                error_msg += f"Missing semicolon in '{line.strip()}'. Did you forget a ';'?"
-            elif "identifier" in str(pe.parserElement):
-                error_msg += f"Unknown identifier in '{line.strip()}'. Check for typos or undeclared variables."
-            elif "'('" in str(pe.parserElement) or "')'" in str(pe.parserElement):
-                error_msg += f"Mismatched parentheses in '{line.strip()}'. Ensure '(' and ')' are correctly placed."
-            elif "'{'" in str(pe.parserElement) or "'}'" in str(pe.parserElement):
-                error_msg += f"Mismatched braces in '{line.strip()}'. Ensure '{{' and '}}' are correctly placed."
-            elif "if" in line.strip().split()[0]:
-                error_msg += f"Malformed if statement in '{line.strip()}'. Check parentheses and braces."
-            else:
-                expected_token = pe.pstr[pe.loc:pe.loc+10].split()[0] if pe.loc < len(pe.pstr) else "(end of input)"
-                error_msg += f"Unexpected token '{expected_token}' in '{line.strip()}'."
-            print(error_msg)
-        except Exception as e:
-            print(f"Unexpected Error at line {i}: {e}")
+    try:
+        program.parseString(code, parseAll=True)
+        return "Valid syntax."
+    except ParseException as e:
+        error_msg = f"Syntax error at line {e.lineno}, column {e.col}: "
+        found_token = e.token if hasattr(e, 'token') else ""
+        expected_tokens = e.parserElement.name if hasattr(e.parserElement, 'name') else str(e.parserElement)
 
-# Example valid and invalid snippets
-valid_code = """
-int a;
-a = 5;
-a = a + 5;
-print(a);
-"""
+        if "if" in code and not re.search(r'if\s*\(', code):
+            return error_msg + "Missing parentheses around 'if' condition."
+        elif found_token == "":
+            return error_msg + "Unexpected end of input. Possible missing semicolon or closing brace."
+        elif found_token == "{":
+            return error_msg + "Unexpected '{'. Possible missing 'if' condition or misplaced block."
+        elif found_token == "}":
+            return error_msg + "Unexpected '}'. Possible missing opening brace '{'."
+        elif found_token == "(":
+            return error_msg + "Unexpected '('. Possible missing 'if' keyword or misplaced parentheses."
+        elif found_token == ")":
+            return error_msg + "Unexpected ')'. Possible missing opening parenthesis '('."
+        elif found_token == ";":
+            return error_msg + "Unexpected ';'. Possible misplaced semicolon or missing statement before it."
+        elif found_token.isalnum():
+            return error_msg + f"Unexpected identifier '{found_token}'. Possible missing keyword or incorrect syntax."
+        elif "Expecting" in expected_tokens:
+            expected_tokens = expected_tokens.split("Expecting")[1].strip()
+            return error_msg + f"Expected {expected_tokens}, found '{found_token}'."
+        else:
+            return error_msg + f"Unexpected token '{found_token}'. Check syntax."
 
-invalid_code = """
-inta;
-a = 5
-printa;
-if a > 0 { print(a); }
-"""
+# Code snippets
+valid_snippets = [
+    "int a; a = 5; print(a);",
+    "int x; x = 10 + 5 - 2; print(x);",
+    "if (a > 0) { print(a); }",
+    "int b; b = 0; if (b < 10) { b = b + 1; print(b); }"
+]
 
-print("Testing valid code:")
-parse_code(valid_code)
+invalid_snippets = [
+    "a=5",  # Missing semicolon
+    "a = 5 print(a);",  # Missing semicolon
+    "if a > 0 { print(a); }", # Missing parentheses around condition
+]
 
-print("\nTesting invalid code:")
-parse_code(invalid_code)
+# Test and output
+print("Valid Snippets:")
+for snippet in valid_snippets:
+    print(f"'{snippet}': {parse_code(snippet)}")
+
+print("\nInvalid Snippets:")
+for snippet in invalid_snippets:
+    print(f"'{snippet}': {parse_code(snippet)}")
