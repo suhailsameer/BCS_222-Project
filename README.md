@@ -10,10 +10,9 @@
 <expression>::=<term>|
                <expression>+<term>|
                <expression>-<term>
-<term>::=<factor>
+<term>::=<number>|<identifier>
 <IF>::="if" (<condition>) {<program>}
 <PRINT>::="print"(expression);
-<factor>::=<number>|<identifier>
 <condition>::=<expression><conditionalOperators><expression>
 <conditonalOperators>::= <|>|==|!=
 <type>::=int|float
