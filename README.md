@@ -10,9 +10,7 @@
 <expression>::=<term>|
                <expression>+<term>|
                <expression>-<term>
-<term>::=<factor>|
-         <factor>*<term>|
-         <factor>/<term>
+<term>::=<factor>
 <IF>::="if" (<condition>) {<program>}
 <PRINT>::="print"(expression);
 <factor>::=<number>|<identifier>
